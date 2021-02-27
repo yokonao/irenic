@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -62,8 +63,16 @@ func writeJSON() {
 	encoder := json.NewEncoder(f)
 	encoder.SetIndent("", "")
 	encoder.Encode(map[string]string{
-		"PHP": "Laravel",
-		"Ruby": "Rails",
+		"PHP":    "Laravel",
+		"Ruby":   "Rails",
 		"Python": "Django",
 	})
+}
+
+func formatForFile() {
+	file, err := os.Create("format.txt")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Fprintf(file, "digit: %d\nstring: %s\nfloat: %f\n", 135, "sample", 4.64)
 }
