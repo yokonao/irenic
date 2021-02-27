@@ -11,4 +11,5 @@ func main() {
 	var builder = writeStringBuilder("Test for string builder writing\n")
 	writeConsole(builder.String())
 	connectNetwork()
+	connectNetworkByHTTP()
 }

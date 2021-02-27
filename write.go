@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"net"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -27,10 +28,10 @@ func writeBuffer(s string) bytes.Buffer {
 	return buffer
 }
 
-func writeStringBuilder(s string) strings.Builder{
+func writeStringBuilder(s string) strings.Builder {
 	var builder strings.Builder
 	builder.Write([]byte(s))
-	return builder;
+	return builder
 }
 
 func connectNetwork() {
@@ -42,4 +43,12 @@ func connectNetwork() {
 	// io.WriteString(conn, "GET / HTTP/1.0\r\nHost: golang.org\r\n\r\n")
 	conn.Write([]byte("GET / HTTP/1.0\r\nHost: golang.org\r\n\r\n"))
 	io.Copy(os.Stdout, conn)
+}
+
+func connectNetworkByHTTP() {
+	res, err := http.Get("http://golang.org")
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(os.Stdout, res.Body)
 }
