@@ -1,10 +1,11 @@
 package main
 
 import (
-	"io"
-	"os"
 	"bytes"
+	"io"
 	"net"
+	"os"
+	"strings"
 )
 
 func writeFile(s string) {
@@ -20,15 +21,21 @@ func writeConsole(s string) {
 	os.Stdout.Write([]byte(s))
 }
 
-func writeBuffer(s string) bytes.Buffer{
+func writeBuffer(s string) bytes.Buffer {
 	var buffer bytes.Buffer
 	buffer.Write([]byte(s))
 	return buffer
 }
 
-func connectNetwork(){
+func writeStringBuilder(s string) strings.Builder{
+	var builder strings.Builder
+	builder.Write([]byte(s))
+	return builder;
+}
+
+func connectNetwork() {
 	conn, err := net.Dial("tcp", "golang.org:80")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	// io.Writerとstringを受け取って書き込む
