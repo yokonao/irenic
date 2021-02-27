@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net"
 	"net/http"
@@ -51,4 +52,18 @@ func connectNetworkByHTTP() {
 		panic(err)
 	}
 	io.Copy(os.Stdout, res.Body)
+}
+
+func writeJSON() {
+	f, e := os.Create("test.json")
+	if e != nil {
+		panic(e)
+	}
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "")
+	encoder.Encode(map[string]string{
+		"PHP": "Laravel",
+		"Ruby": "Rails",
+		"Python": "Django",
+	})
 }

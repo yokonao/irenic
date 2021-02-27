@@ -12,4 +12,5 @@ func main() {
 	writeConsole(builder.String())
 	connectNetwork()
 	connectNetworkByHTTP()
+	writeJSON()
 }
