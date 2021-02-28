@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"compress/gzip"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -100,4 +102,51 @@ func writeBufio3() {
 	writeBufio2()
 	buffer.WriteString("2end\n")
 	buffer.Flush()
+}
+
+func writeGzip() {
+	file, err := os.Create("gzip.txt.gz")
+	if err != nil {
+		panic(err)
+	}
+	writer := gzip.NewWriter(file)
+	writer.Header.Name = "gzip.txt"
+	io.WriteString(writer, "gzip.Writer example\n")
+	writer.Close()
+}
+
+func writeCsv() {
+	file, err := os.Create("test.csv")
+	if err != nil {
+		panic(err)
+	}
+	writer := csv.NewWriter(file)
+	writer.Write([]string{"Nagoya", "052"})
+	writer.Write([]string{"Tokyo", "03"})
+	writer.Write([]string{"Kyoto", "075"})
+	writer.Flush()
+
+}
+
+func writeCsvStdout() {
+	writer := csv.NewWriter(os.Stdout)
+	writer.Write([]string{"Nagoya", "052"})
+	writer.Write([]string{"Tokyo", "03"})
+	writer.Write([]string{"Kyoto", "075"})
+	writer.Flush()
+
+}
+
+func writeCsvMulti() {
+	file, err := os.Create("test.csv")
+	if err != nil {
+		panic(err)
+	}
+	multiWriter := io.MultiWriter(file, os.Stdout)
+	writer := csv.NewWriter(multiWriter)
+	writer.Write([]string{"Nagoya", "052"})
+	writer.Write([]string{"Tokyo", "03"})
+	writer.Write([]string{"Kyoto", "075"})
+	writer.Flush()
+
 }
