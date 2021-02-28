@@ -150,3 +150,22 @@ func writeCsvMulti() {
 	writer.Flush()
 
 }
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", "application/json")
+	source := map[string]string{
+		"Hello": "World",
+	}
+	gzipWriter := gzip.NewWriter(w)
+	multiWriter := io.MultiWriter(gzipWriter, os.Stdout)
+	encoder := json.NewEncoder(multiWriter)
+	encoder.SetIndent("", "")
+	encoder.Encode(source)
+	gzipWriter.Flush()
+
+}
+func runHTTP() {
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":8080", nil)
+}
