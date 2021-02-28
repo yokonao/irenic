@@ -1,5 +1,5 @@
 main:
-	go run main.go write.go
+	go run write.go
 
 clean:
 	rm *.csv *.txt *.gz *.json 
