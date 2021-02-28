@@ -20,4 +20,5 @@ func main() {
 	//writeCsv()
 	//writeCsvStdout()
 	writeCsvMulti()
+	runHTTP()
 }
