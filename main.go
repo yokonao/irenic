@@ -8,5 +8,10 @@ func main() {
 	writeConsole("Test for console writing\n")
 	var buf = writeBuffer("Test for buffer writing\n")
 	writeConsole(buf.String())
+	var builder = writeStringBuilder("Test for string builder writing\n")
+	writeConsole(builder.String())
 	connectNetwork()
+	connectNetworkByHTTP()
+	writeJSON()
+	formatForFile()
 }

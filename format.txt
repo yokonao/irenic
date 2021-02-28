@@ -1,0 +1,3 @@
+digit: 135
+string: sample
+float: 4.640000
