@@ -14,4 +14,6 @@ func main() {
 	connectNetworkByHTTP()
 	writeJSON()
 	formatForFile()
+	writeBufio()
+	writeBufio3()
 }

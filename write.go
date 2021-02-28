@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -75,4 +76,28 @@ func formatForFile() {
 		panic(err)
 	}
 	fmt.Fprintf(file, "digit: %d\nstring: %s\nfloat: %f\n", 135, "sample", 4.64)
+}
+
+func writeBufio() {
+	buffer := bufio.NewWriter(os.Stdout)
+	buffer.WriteString("bufio.Writer ")
+	buffer.Flush()
+	writeConsole("hello\n")
+	buffer.WriteString("example\n")
+	buffer.Flush()
+}
+
+func writeBufio2() {
+	buffer := bufio.NewWriter(os.Stdout)
+	buffer.WriteString("bufio.Writer ")
+	buffer.WriteString("example\n")
+	buffer.Flush()
+}
+
+func writeBufio3() {
+	buffer := bufio.NewWriter(os.Stdout)
+	buffer.WriteString("2start ")
+	writeBufio2()
+	buffer.WriteString("2end\n")
+	buffer.Flush()
 }
