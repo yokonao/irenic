@@ -14,4 +14,10 @@ func main() {
 	connectNetworkByHTTP()
 	writeJSON()
 	formatForFile()
+	writeBufio()
+	writeBufio3()
+	writeGzip()
+	//writeCsv()
+	//writeCsvStdout()
+	writeCsvMulti()
 }
