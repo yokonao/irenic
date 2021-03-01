@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"os"
 )
 
 func main() {
 	readBigEndian()
-	readPNG()
+	readPNG("Lena.png") // GOは大文字小文字を区別しない？
+	embedText("IRENIC PROGRAMMING++", "lena.png", "lenaSecret.png")
+	readPNG("LENASECRET.png")
 }
 
 func readBigEndian() {
@@ -29,6 +32,12 @@ func dumpChunk(chunk io.Reader) {
 	buffer := make([]byte, 4)
 	chunk.Read(buffer)
 	fmt.Printf("length: %d, chunk: %v\n", length, string(buffer))
+	if string(buffer) == "tEXt" {
+		textBuffer := make([]byte, length)
+		chunk.Read(textBuffer)
+		// printlnだと表示されるタイミングがずれる
+		fmt.Printf("%s\n", string(textBuffer))
+	}
 }
 
 func readChunks(file *os.File) []io.Reader {
@@ -48,8 +57,9 @@ func readChunks(file *os.File) []io.Reader {
 	return chunks
 }
 
-func readPNG() {
-	file, err := os.Open("resource/lena.png")
+func readPNG(filename string) {
+	println(filename)
+	file, err := os.Open("resource/" + filename)
 	if err != nil {
 		panic(err)
 	}
@@ -57,5 +67,37 @@ func readPNG() {
 	chunks := readChunks(file)
 	for _, chunk := range chunks {
 		dumpChunk(chunk)
+	}
+}
+
+func textChunk(text string) bytes.Buffer{
+	byteData := []byte(text)
+	var buffer bytes.Buffer
+	binary.Write(&buffer, binary.BigEndian, int32(len(byteData)))
+	io.WriteString(&buffer, "tEXt")
+	buffer.Write(byteData)
+	crc := crc32.NewIEEE() // nanikore
+	io.WriteString(crc, "tEXt")
+	binary.Write(&buffer, binary.BigEndian, crc.Sum32())
+	return buffer;
+}
+func embedText(text string, oldFileName string, newFileName string) {
+	file, err := os.Open("resource/" + oldFileName)
+	if err != nil {
+		panic(err)
+	}
+	chunks := readChunks(file)
+	defer file.Close()
+	newFile, err := os.Create("resource/" + newFileName)
+	if err != nil {
+		panic(err)
+	}
+	defer newFile.Close()
+	io.WriteString(newFile, "\x89PNG\r\n\x1a\n")
+	io.Copy(newFile, chunks[0])
+	buffer := textChunk(text)
+	io.Copy(newFile, &buffer)
+	for _, chunk := range chunks[1:] {
+		io.Copy(newFile, chunk)
 	}
 }
