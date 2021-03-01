@@ -11,9 +11,9 @@ import (
 
 func main() {
 	readBigEndian()
-	readPNG("Lena.png") // GOは大文字小文字を区別しない？
+	readPNG("lena.png") // GOは大文字小文字を区別しない？
 	embedText("IRENIC PROGRAMMING++", "lena.png", "lenaSecret.png")
-	readPNG("LENASECRET.png")
+	readPNG("lenaSecret.png")
 }
 
 func readBigEndian() {
@@ -70,7 +70,7 @@ func readPNG(filename string) {
 	}
 }
 
-func textChunk(text string) bytes.Buffer{
+func textChunk(text string) bytes.Buffer {
 	byteData := []byte(text)
 	var buffer bytes.Buffer
 	binary.Write(&buffer, binary.BigEndian, int32(len(byteData)))
@@ -79,7 +79,7 @@ func textChunk(text string) bytes.Buffer{
 	crc := crc32.NewIEEE() // nanikore
 	io.WriteString(crc, "tEXt")
 	binary.Write(&buffer, binary.BigEndian, crc.Sum32())
-	return buffer;
+	return buffer
 }
 func embedText(text string, oldFileName string, newFileName string) {
 	file, err := os.Open("resource/" + oldFileName)
