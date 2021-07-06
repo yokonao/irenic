@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -144,11 +144,6 @@ func zipWriteFile() {
 	}
 	defer file.Close()
 
-	body, err := ioutil.ReadAll(file)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(body))
 	outFile, err := os.Create("old.zip")
 	if err != nil {
 		panic(err)
@@ -162,15 +157,11 @@ func zipWriteFile() {
 	if err != nil {
 		panic(err)
 	}
-	_, err = writer.Write(body)
-	if err != nil {
-		panic(err)
-	}
+	io.Copy(writer, file)
 }
 
 func zipWriteString(text string) {
-	byteData := []byte(text)
-	fmt.Println(string(byteData))
+	reader := strings.NewReader(text)
 	outFile, err := os.Create("quote.zip")
 	if err != nil {
 		panic(err)
@@ -184,9 +175,6 @@ func zipWriteString(text string) {
 	if err != nil {
 		panic(err)
 	}
-	_, err = writer.Write(byteData)
-	if err != nil {
-		panic(err)
-	}
 
+	io.Copy(writer, reader)
 }
