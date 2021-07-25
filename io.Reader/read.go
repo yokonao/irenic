@@ -1,12 +1,15 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
+	"crypto/rand"
 	"encoding/binary"
 	"fmt"
 	"hash/crc32"
 	"io"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -14,6 +17,10 @@ func main() {
 	readPNG("lena.png") // GOは大文字小文字を区別しない？
 	embedText("IRENIC PROGRAMMING++", "lena.png", "lenaSecret.png")
 	readPNG("lenaSecret.png")
+	copyFile()
+	genRandomFile()
+	zipWriteFile()
+	zipWriteString("There is always light behind the clouds.")
 }
 
 func readBigEndian() {
@@ -59,7 +66,7 @@ func readChunks(file *os.File) []io.Reader {
 
 func readPNG(filename string) {
 	println(filename)
-	file, err := os.Open("resource/" + filename)
+	file, err := os.Open("../resource/" + filename)
 	if err != nil {
 		panic(err)
 	}
@@ -82,13 +89,13 @@ func textChunk(text string) bytes.Buffer {
 	return buffer
 }
 func embedText(text string, oldFileName string, newFileName string) {
-	file, err := os.Open("resource/" + oldFileName)
+	file, err := os.Open("../resource/" + oldFileName)
 	if err != nil {
 		panic(err)
 	}
 	chunks := readChunks(file)
 	defer file.Close()
-	newFile, err := os.Create("resource/" + newFileName)
+	newFile, err := os.Create("../resource/" + newFileName)
 	if err != nil {
 		panic(err)
 	}
@@ -100,4 +107,74 @@ func embedText(text string, oldFileName string, newFileName string) {
 	for _, chunk := range chunks[1:] {
 		io.Copy(newFile, chunk)
 	}
+}
+
+func copyFile() {
+	file, err := os.Open("../resource/old.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	newFile, err := os.Create("new.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer newFile.Close()
+	io.Copy(newFile, file)
+}
+
+func genRandomFile() {
+	randFile, err := os.Create("random.txt")
+	if err != nil {
+		panic(err)
+	}
+	b := make([]byte, 10)
+	_, err = rand.Read(b)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(b)
+	randFile.Write(b)
+}
+
+func zipWriteFile() {
+	file, err := os.Open("../resource/old.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	outFile, err := os.Create("old.zip")
+	if err != nil {
+		panic(err)
+	}
+	defer outFile.Close()
+
+	zipWriter := zip.NewWriter(outFile)
+	defer zipWriter.Close()
+
+	writer, err := zipWriter.Create("old.txt")
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(writer, file)
+}
+
+func zipWriteString(text string) {
+	reader := strings.NewReader(text)
+	outFile, err := os.Create("quote.zip")
+	if err != nil {
+		panic(err)
+	}
+	defer outFile.Close()
+
+	zipWriter := zip.NewWriter(outFile)
+	defer zipWriter.Close()
+
+	writer, err := zipWriter.Create("quote.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	io.Copy(writer, reader)
 }
